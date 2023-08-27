@@ -1,5 +1,3 @@
-
-
 data "aws_iam_policy_document" "assume_role" {
   statement {
     effect = "Allow"
@@ -27,6 +25,10 @@ data "aws_iam_policy_document" "lambda_logging" {
   }
 }
 
+data "aws_ssm_parameter" "dbt_slack_webhook_url" {
+  name = "DBT_SLACK_WEBHOOK_URL"
+}
+
 resource "aws_iam_role" "iam_for_lambda" {
   name               = "iam_for_lambda"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
@@ -36,10 +38,6 @@ resource "aws_lambda_layer_version" "slack_function_layer" {
   filename            = "src/lambda/lambda_layer.zip"
   layer_name          = "slack-function-layer"
   compatible_runtimes = ["python3.9"]
-}
-
-data "aws_ssm_parameter" "dbt_slack_webhook_url" {
-  name = "DBT_SLACK_WEBHOOK_URL"
 }
 
 resource "aws_lambda_function" "slack_lambda" {
