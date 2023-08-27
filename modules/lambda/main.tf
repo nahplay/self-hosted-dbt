@@ -38,6 +38,10 @@ resource "aws_lambda_layer_version" "slack_function_layer" {
   compatible_runtimes = ["python3.9"]
 }
 
+data "aws_ssm_parameter" "dbt_slack_webhook_url" {
+  name = "DBT_SLACK_WEBHOOK_URL"
+}
+
 resource "aws_lambda_function" "slack_lambda" {
   filename      = "src/lambda/SlackFunction.zip"
   function_name = "SlackFunction"
@@ -50,7 +54,7 @@ resource "aws_lambda_function" "slack_lambda" {
 
   environment {
     variables = {
-      DBT_SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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"
+      DBT_SLACK_WEBHOOK_URL = data.aws_ssm_parameter.dbt_slack_webhook_url.value
       AVAILABILITY_ZONE = "eu-west-1"
     }
   }
