@@ -28,13 +28,6 @@ data "aws_iam_policy_document" "allow_put_files_s3" {
   }
 }
 
-
-#resource "aws_iam_policy_attachment" "ecs_task_execution_role_attachment_s3" {
-#  name       = "ecs-task-execution-role-attachment-s3"
-#  roles      = [aws_iam_role.ecs_task_execution_role.name]
-#  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-#}
-
 resource "aws_iam_policy_attachment" "ecs_task_execution_role_attachment_ecs_execution_role" {
   name       = "ecs-task-execution-role-attachment-ecs-execution-role"
   roles      = [aws_iam_role.ecs_task_execution_role.name]

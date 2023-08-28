@@ -74,7 +74,7 @@ resource "aws_eip" "nat_gateway_elastic_ip" {
   depends_on = [
     aws_route_table_association.RT-IG-Association
   ]
-  vpc = true
+  domain = "vpc"
 }
 
 resource "aws_nat_gateway" "ecs_nat_gateway" {
