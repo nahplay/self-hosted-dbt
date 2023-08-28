@@ -133,7 +133,7 @@ resource "aws_ecr_repository" "ecr_repo" {
 resource "aws_cloudwatch_event_rule" "dbt_daily_run" {
   name                = "dbtDailyRun"
   description         = "dbt Daily Refresh"
-  schedule_expression = "cron(*/2 * * * ? *)"
+  schedule_expression = "cron(0 * * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "ecs_scheduled_dbt_daily_run" {
@@ -158,7 +158,7 @@ resource "aws_cloudwatch_event_target" "ecs_scheduled_dbt_daily_run" {
 resource "aws_cloudwatch_event_rule" "dbt_docs" {
   name                = "dbtDocs"
   description         = "dbt docs"
-  schedule_expression = "cron(*/2 * * * ? *)"
+  schedule_expression = "cron(0 * * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "ecs_scheduled_task" {
