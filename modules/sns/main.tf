@@ -1,6 +1,3 @@
-module "lambda" {
-  source = "../lambda"
-}
 
 resource "aws_sns_topic" "ecs_topic" {
   name = "ecs-lambda-topic"
@@ -9,13 +6,13 @@ resource "aws_sns_topic" "ecs_topic" {
 resource "aws_sns_topic_subscription" "user_updates_lambda_target" {
   topic_arn = aws_sns_topic.ecs_topic.arn
   protocol  = "lambda"
-  endpoint  = module.lambda.lambda_arn
+  endpoint  = var.lambda_arn
 }
 
 resource "aws_lambda_permission" "with_sns" {
   statement_id  = "AllowExecutionFromSNS"
   action        = "lambda:InvokeFunction"
-  function_name = module.lambda.lambda_name
+  function_name = var.lambda_name
   principal     = "sns.amazonaws.com"
   source_arn    = aws_sns_topic.ecs_topic.arn
 }

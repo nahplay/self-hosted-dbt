@@ -1,7 +1,3 @@
-module "sns" {
-  source = "../sns"
-}
-
 resource "aws_cloudwatch_event_rule" "ecs_rule" {
   name        = "capture-dbt-jobs-rule"
 
@@ -17,5 +13,5 @@ resource "aws_cloudwatch_event_rule" "ecs_rule" {
 
 resource "aws_cloudwatch_event_target" "sns" {
   rule      = aws_cloudwatch_event_rule.ecs_rule.name
-  arn       = module.sns.sns_lambda_topic
+  arn       = var.sns_lambda_topic_arn
 }

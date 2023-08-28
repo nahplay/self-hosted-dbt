@@ -1,11 +1,3 @@
-module "iam" {
-  source = "../iam"
-}
-
-module "s3" {
-  source = "../s3"
-}
-
 resource "aws_ecs_cluster" "fargate_cluster" {
   name = var.cluster_name
 }
@@ -28,8 +20,8 @@ resource "aws_ecs_task_definition" "task_def_1" {
   network_mode             = "awsvpc"
   cpu                      = 256
   memory                   = 512
-  execution_role_arn       = module.iam.ecs_task_execution_role_arn
-  task_role_arn            = module.iam.ecs_task_execution_role_arn
+  execution_role_arn       = var.ecs_task_execution_role_arn
+  task_role_arn            = var.ecs_task_execution_role_arn
 
   container_definitions = jsonencode([
     {
@@ -75,8 +67,8 @@ resource "aws_ecs_task_definition" "task_def_2" {
   network_mode             = "awsvpc"
   cpu                      = 256
   memory                   = 512
-  execution_role_arn       = module.iam.ecs_task_execution_role_arn
-  task_role_arn            = module.iam.ecs_task_execution_role_arn
+  execution_role_arn       = var.ecs_task_execution_role_arn
+  task_role_arn            = var.ecs_task_execution_role_arn
 
   container_definitions = jsonencode([
     {
@@ -130,7 +122,7 @@ resource "aws_cloudwatch_event_target" "ecs_scheduled_dbt_daily_run" {
   target_id = "run-scheduled-task-every-hour"
   arn       = aws_ecs_cluster.fargate_cluster.arn
   rule      = aws_cloudwatch_event_rule.dbt_daily_run.name
-  role_arn  = module.iam.ecs_task_execution_role_arn
+  role_arn  = var.ecs_task_execution_role_arn
 
   ecs_target {
     task_count          = 1
@@ -155,7 +147,7 @@ resource "aws_cloudwatch_event_target" "ecs_scheduled_task" {
   target_id = "run-scheduled-task-every-hour"
   arn       = aws_ecs_cluster.fargate_cluster.arn
   rule      = aws_cloudwatch_event_rule.dbt_docs.name
-  role_arn  = module.iam.ecs_task_execution_role_arn
+  role_arn  = var.ecs_task_execution_role_arn
 
   ecs_target {
     task_count          = 1
