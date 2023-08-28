@@ -37,14 +37,14 @@ data "aws_iam_policy_document" "ecs_run_task_policy" {
   version = "2012-10-17"
 
   statement {
-    effect = "Allow"
-    actions = ["ecs:RunTask"]
+    effect    = "Allow"
+    actions   = ["ecs:RunTask"]
     resources = ["*"]
   }
 
   statement {
-    effect = "Allow"
-    actions = ["iam:PassRole"]
+    effect    = "Allow"
+    actions   = ["iam:PassRole"]
     resources = ["*"]
 
     condition {
@@ -55,8 +55,8 @@ data "aws_iam_policy_document" "ecs_run_task_policy" {
   }
 
   statement {
-    effect = "Allow"
-    actions = ["ecs:TagResource"]
+    effect    = "Allow"
+    actions   = ["ecs:TagResource"]
     resources = ["*"]
 
     condition {
@@ -65,7 +65,13 @@ data "aws_iam_policy_document" "ecs_run_task_policy" {
       values   = ["RunTask"]
     }
   }
-}
+
+    statement {
+      effect    = "Allow"
+      actions   = ["ssm:GetParameters"]
+      resources = ["arn:aws:ssm:eu-west-1:731247769824:parameter/*"]
+    }
+  }
 
 resource "aws_iam_policy" "ecs_run_task" {
   name        = "ecs-run-task-policy"

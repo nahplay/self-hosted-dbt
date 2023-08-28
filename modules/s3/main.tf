@@ -1,9 +1,10 @@
-data "aws_ssm_parameter" "dbt_docs_generate_bucket" {
-  name = "docs_host_bucket_name"
+data "aws_ssm_parameter" "s3bucket" {
+  name = "DBT_DOCS_BUCKET"
 }
 
 resource "aws_s3_bucket" "dbt_docs_generate_bucket" {
-  bucket = data.aws_ssm_parameter.dbt_docs_generate_bucket.value
+  bucket = data.aws_ssm_parameter.s3bucket.value
+  force_destroy = true
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access" {

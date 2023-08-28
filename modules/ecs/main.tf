@@ -22,24 +22,6 @@ resource "aws_ecs_cluster_capacity_providers" "example" {
   }
 }
 
-data "aws_ssm_parameter" "github_token" {
-  name = "GITHUB_TOKEN"
-}
-
-data "aws_ssm_parameter" "snowflake_account" {
-  name = "SNOWFLAKE_ACCOUNT"
-}
-
-data "aws_ssm_parameter" "snowflake_password" {
-  name = "SNOWFLAKE_PASSWORD"
-}
-
-data "aws_ssm_parameter" "snowflake_username" {
-  name = "SNOWFLAKE_USERNAME"
-}
-
-
-
 resource "aws_ecs_task_definition" "task_def_1" {
   family                   = "dbt_docs_generate"
   requires_compatibilities = ["FARGATE"]
@@ -54,28 +36,27 @@ resource "aws_ecs_task_definition" "task_def_1" {
       name      = "dbt-images"
       image     = "${aws_ecr_repository.ecr_repo.repository_url}:dbt_docs_generate"
       essential = true
-      environment = [
-        {
-          name  = "GITHUB_TOKEN"
-          value = data.aws_ssm_parameter.github_token.value
+      secrets = [
+            {
+              name       = "GITHUB_TOKEN",
+              valueFrom = "arn:aws:ssm:eu-west-1:731247769824:parameter/GITHUB_TOKEN"
+            },
+      {
+          name  = "DBT_DOCS_BUCKET"
+          valueFrom = "arn:aws:ssm:eu-west-1:731247769824:parameter/DBT_DOCS_BUCKET"
         },
-        {
+      {
           name  = "SNOWFLAKE_ACCOUNT"
-          value = data.aws_ssm_parameter.snowflake_account.value
+          valueFrom = "arn:aws:ssm:eu-west-1:731247769824:parameter/SNOWFLAKE_ACCOUNT"
         },
         {
           name  = "SNOWFLAKE_PASSWORD"
-          value = data.aws_ssm_parameter.snowflake_password.value
+          valueFrom = "arn:aws:ssm:eu-west-1:731247769824:parameter/SNOWFLAKE_PASSWORD"
         },
         {
           name  = "SNOWFLAKE_USERNAME"
-          value = data.aws_ssm_parameter.snowflake_username.value
-        },
-        {
-          name  = "DBT_DOCS_BUCKET"
-          value = module.s3.dbt_docs_generate_bucket
-        }
-      ],
+          valueFrom = "arn:aws:ssm:eu-west-1:731247769824:parameter/SNOWFLAKE_USERNAME"
+        }]
       logConfiguration = {
         logDriver = "awslogs",
         options = {
@@ -102,24 +83,23 @@ resource "aws_ecs_task_definition" "task_def_2" {
       name        = "dbt-images"
       image       = "${aws_ecr_repository.ecr_repo.repository_url}:dbt_daily_run"
       essential   = true
-      environment = [
+      secrets = [
         {
-          name  = "GITHUB_TOKEN"
-          value = data.aws_ssm_parameter.github_token.value
-        },
-        {
+              name       = "GITHUB_TOKEN",
+              valueFrom = "arn:aws:ssm:eu-west-1:731247769824:parameter/GITHUB_TOKEN"
+            },
+      {
           name  = "SNOWFLAKE_ACCOUNT"
-          value = data.aws_ssm_parameter.snowflake_account.value
+          valueFrom = "arn:aws:ssm:eu-west-1:731247769824:parameter/SNOWFLAKE_ACCOUNT"
         },
         {
           name  = "SNOWFLAKE_PASSWORD"
-          value = data.aws_ssm_parameter.snowflake_password.value
+          valueFrom = "arn:aws:ssm:eu-west-1:731247769824:parameter/SNOWFLAKE_PASSWORD"
         },
         {
           name  = "SNOWFLAKE_USERNAME"
-          value = data.aws_ssm_parameter.snowflake_username.value
-        }
-      ],
+          valueFrom = "arn:aws:ssm:eu-west-1:731247769824:parameter/SNOWFLAKE_USERNAME"
+        }]
       logConfiguration = {
         logDriver = "awslogs",
         options = {
@@ -143,7 +123,7 @@ resource "aws_ecr_repository" "ecr_repo" {
 resource "aws_cloudwatch_event_rule" "dbt_daily_run" {
   name                = "dbtDailyRun"
   description         = "dbt Daily Refresh"
-  schedule_expression = "cron(*/15 * * * ? *)"
+  schedule_expression = "cron(0 * * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "ecs_scheduled_dbt_daily_run" {
@@ -168,7 +148,7 @@ resource "aws_cloudwatch_event_target" "ecs_scheduled_dbt_daily_run" {
 resource "aws_cloudwatch_event_rule" "dbt_docs" {
   name                = "dbtDocs"
   description         = "dbt docs"
-  schedule_expression = "cron(*/15 * * * ? *)"
+  schedule_expression = "cron(0 * * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "ecs_scheduled_task" {
