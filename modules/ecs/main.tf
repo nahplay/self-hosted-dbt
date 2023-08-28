@@ -26,7 +26,7 @@ resource "aws_ecs_task_definition" "task_def_1" {
   container_definitions = jsonencode([
     {
       name      = "dbt-images"
-      image     = "${aws_ecr_repository.ecr_repo.repository_url}:dbt_docs_generate"
+      image     = "${aws_ecr_repository.ecr_repo.repository_url}:latest"
       essential = true
       secrets = [
             {
@@ -48,6 +48,15 @@ resource "aws_ecs_task_definition" "task_def_1" {
         {
           name  = "SNOWFLAKE_USERNAME"
           valueFrom = "arn:aws:ssm:eu-west-1:731247769824:parameter/SNOWFLAKE_USERNAME"
+        }]
+      environment = [
+        {
+          name  = "DBT_JOB_PATH"
+          value = "jobs/dbt_docs.sh"
+        },
+        {
+          name = "branch"
+          value = "master"
         }]
       logConfiguration = {
         logDriver = "awslogs",
@@ -73,7 +82,7 @@ resource "aws_ecs_task_definition" "task_def_2" {
   container_definitions = jsonencode([
     {
       name        = "dbt-images"
-      image       = "${aws_ecr_repository.ecr_repo.repository_url}:dbt_daily_run"
+      image       = "${aws_ecr_repository.ecr_repo.repository_url}:latest"
       essential   = true
       secrets = [
         {
@@ -91,6 +100,15 @@ resource "aws_ecs_task_definition" "task_def_2" {
         {
           name  = "SNOWFLAKE_USERNAME"
           valueFrom = "arn:aws:ssm:eu-west-1:731247769824:parameter/SNOWFLAKE_USERNAME"
+        }]
+      environment = [
+        {
+          name  = "DBT_JOB_PATH"
+          value = "jobs/dbt_daily_run.sh"
+        },
+        {
+          name = "branch"
+          value = "master"
         }]
       logConfiguration = {
         logDriver = "awslogs",
