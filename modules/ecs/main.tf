@@ -133,7 +133,7 @@ resource "aws_ecr_repository" "ecr_repo" {
 resource "aws_cloudwatch_event_rule" "dbt_daily_run" {
   name                = "dbtDailyRun"
   description         = "dbt Daily Refresh"
-  schedule_expression = "cron(0 * * * ? *)"
+  schedule_expression = "cron(*/2 * * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "ecs_scheduled_dbt_daily_run" {
@@ -149,7 +149,7 @@ resource "aws_cloudwatch_event_target" "ecs_scheduled_dbt_daily_run" {
     enable_ecs_managed_tags = true
     launch_type = "FARGATE"
     network_configuration {
-    subnets = ["subnet-00209d2d479d613fa"]
+    subnets = [var.ecs_task_subnet]
       assign_public_ip = true
     }
   }
@@ -158,7 +158,7 @@ resource "aws_cloudwatch_event_target" "ecs_scheduled_dbt_daily_run" {
 resource "aws_cloudwatch_event_rule" "dbt_docs" {
   name                = "dbtDocs"
   description         = "dbt docs"
-  schedule_expression = "cron(0 * * * ? *)"
+  schedule_expression = "cron(*/2 * * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "ecs_scheduled_task" {
@@ -174,7 +174,7 @@ resource "aws_cloudwatch_event_target" "ecs_scheduled_task" {
     enable_ecs_managed_tags = true
     launch_type = "FARGATE"
     network_configuration {
-    subnets = ["subnet-00209d2d479d613fa"]
+    subnets = [var.ecs_task_subnet]
       assign_public_ip = true
     }
   }
