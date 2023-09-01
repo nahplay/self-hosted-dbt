@@ -2,7 +2,7 @@ resource "aws_ecs_cluster" "fargate_cluster" {
   name = var.cluster_name
 }
 
-resource "aws_ecs_cluster_capacity_providers" "example" {
+resource "aws_ecs_cluster_capacity_providers" "ecs_capacity_provider" {
   cluster_name = aws_ecs_cluster.fargate_cluster.name
 
   capacity_providers = ["FARGATE"]
@@ -14,7 +14,7 @@ resource "aws_ecs_cluster_capacity_providers" "example" {
   }
 }
 
-resource "aws_ecs_task_definition" "task_def_1" {
+resource "aws_ecs_task_definition" "dbt_docs_task_def" {
   family                   = "dbt_docs_generate"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
@@ -70,7 +70,7 @@ resource "aws_ecs_task_definition" "task_def_1" {
   ])
 }
 
-resource "aws_ecs_task_definition" "task_def_2" {
+resource "aws_ecs_task_definition" "dbt_daily_run_def" {
   family                   = "dbt_daily_run"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
@@ -144,7 +144,7 @@ resource "aws_cloudwatch_event_target" "ecs_scheduled_dbt_daily_run" {
 
   ecs_target {
     task_count          = 1
-    task_definition_arn = aws_ecs_task_definition.task_def_2.arn
+    task_definition_arn = aws_ecs_task_definition.dbt_daily_run_def.arn
     enable_execute_command = false
     enable_ecs_managed_tags = true
     launch_type = "FARGATE"
@@ -169,7 +169,7 @@ resource "aws_cloudwatch_event_target" "ecs_scheduled_task" {
 
   ecs_target {
     task_count          = 1
-    task_definition_arn = aws_ecs_task_definition.task_def_1.arn
+    task_definition_arn = aws_ecs_task_definition.dbt_docs_task_def.arn
     enable_execute_command = false
     enable_ecs_managed_tags = true
     launch_type = "FARGATE"
@@ -180,10 +180,10 @@ resource "aws_cloudwatch_event_target" "ecs_scheduled_task" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "log_group_task_def_1" {
-  name = "/ecs/${aws_ecs_task_definition.task_def_1.family}"
+resource "aws_cloudwatch_log_group" "log_group_dbt_docs_task" {
+  name = "/ecs/${aws_ecs_task_definition.dbt_docs_task_def.family}"
 }
 
-resource "aws_cloudwatch_log_group" "log_group_task_def_2" {
-  name = "/ecs/${aws_ecs_task_definition.task_def_2.family}"
+resource "aws_cloudwatch_log_group" "log_group_dbt_daily_run" {
+  name = "/ecs/${aws_ecs_task_definition.dbt_daily_run_def.family}"
 }
