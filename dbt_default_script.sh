@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-git clone --single-branch -b master https://$GITHUB_TOKEN@github.com/nahplay/snowflake_dbt.git
+git clone --single-branch -b $branch https://$GITHUB_TOKEN@github.com/nahplay/snowflake_dbt.git
 
 mv snowflake_dbt app
 
